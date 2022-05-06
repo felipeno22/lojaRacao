@@ -144,7 +144,7 @@ $app->get("/admin/categories/:idcategory/delete", function ($idcategory) {
 });
 
 
-/*
+
 
 $app->get("/admin/categories/:idcategory/products", function ($idcategory) {
 
@@ -159,14 +159,13 @@ $app->get("/admin/categories/:idcategory/products", function ($idcategory) {
 
  	$admin= new PageAdmin();
 
- 	$admin->setTlp("categories-products",["category"=>$categories->getValues(),
+ 	$admin->setTpl("categories-products",["category"=>$categories->getValues(),
 	 											"productsRelated"=>$categories->getProducts(),
  												"productsNotRelated"=>$categories->getProducts(false)]);
 
 
 
 });
-
 
 
 $app->get("/admin/categories/:idcategory/products/:idproduto/add", function ($idcategory,$idproduct) {
@@ -215,6 +214,6 @@ $app->get("/admin/categories/:idcategory/products/:idproduto/remove", function (
  	
 
 });
-*/
+
 
 ?>

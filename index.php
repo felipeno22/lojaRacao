@@ -19,7 +19,7 @@ require_once("site.php");
 require_once("admin.php");
 require_once("user.php");
 require_once("category.php");
-//require_once("product.php");
+require_once("product.php");
 //require_once("orders.php");
 
 

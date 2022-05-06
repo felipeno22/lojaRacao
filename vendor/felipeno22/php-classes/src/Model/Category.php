@@ -36,8 +36,10 @@ protected $fields = [
 			$result=$sql->select("call sp_categories_save(:pidcategory,
 			:pdescategory)",array(":pidcategory"=>$this->getidcategory(),
 			":pdescategory"=>$this->getdescategory()));
+			
+			$this->setData($result[0]);
 
-		//	Category::updateFile();
+				Category::updateFile();
 
 		}
 
@@ -57,8 +59,9 @@ public  function update(){
 			$result=$sql->select("call sp_categories_save(:pidcategory,
 			:pdescategory)",array(":pidcategory"=>$this->getidcategory(),
 			":pdescategory"=>$this->getdescategory()));
+			$this->setData($result[0]);
 	
-	//Category::updateFile();
+	Category::updateFile();
 
 	}
 
@@ -93,14 +96,14 @@ public  function delete($idcategory){
 
 	$result=$sql->select("delete from tb_categories where idcategory= :idcategory",array(":idcategory"=>$idcategory));
 	
-	//Category::updateFile();
+	Category::updateFile();
 
 	}
 
-/*
+
 	public static function updateFile(){
 
-		$category=Category::listAll();
+		$category= Category::listAll();
 
 		$html=[];
 
@@ -140,8 +143,30 @@ public  function delete($idcategory){
 
 		return $result;
 	}
+	
+	
+	public function addProduct(Product $product){
+
+			$sql=new Sql();
+
+			$sql->query("insert into tb_productscategories( idcategory,idproduct)value(:idcategory,:idproduct)",
+			["idcategory"=>$this->getidcategory(),
+			  "idproduct"=>$product->getidproduct()]);
+
+	}
+
+	public function removeProduct(Product $product){
+
+			$sql=new Sql();
+
+			$sql->query("delete from tb_productscategories 
+				where idcategory= :idcategory and idproduct=:idproduct",
+				["idcategory"=>$this->getidcategory(),"idproduct"=>$product->getidproduct()]);
+
+	}
 
 
+/*
 	public function getProductsPage($page=1, $itemsToPage=3){
 
 			$sql= new Sql();
@@ -174,26 +199,7 @@ public  function delete($idcategory){
 
 
 
-	public function addProduct(Product $product){
-
-			$sql=new Sql();
-
-			$sql->query("insert into tb_productscategories( idcategory,idproduct)value(:idcategory,:idproduct)",
-			["idcategory"=>$this->getidcategory(),
-			  "idproduct"=>$product->getidproduct()]);
-
-	}
-
-	public function removeProduct(Product $product){
-
-			$sql=new Sql();
-
-			$sql->query("delete from tb_productscategories 
-				where idcategory= :idcategory and idproduct=:idproduct",
-				["idcategory"=>$this->getidcategory(),"idproduct"=>$product->getidproduct()]);
-
-	}
-
+	
 
 
 	public  static function getPage($page=1, $itemsToPage=10){
