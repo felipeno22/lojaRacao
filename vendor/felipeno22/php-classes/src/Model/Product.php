@@ -9,7 +9,7 @@ class Product extends Model{
 
 		protected $fields = [
 		"idproduct", "desproduct","vlprice","desbrand","desline" ,"desporteraca"
-		, "description", "desagedog", "vlweight", "desurl","desphoto"
+		, "description", "desagedog", "vlweight", "desurl","desphoto","nrtotal","vltotal"
 	];		
 
 		//lista todas categorias
@@ -203,7 +203,7 @@ public static function checkList($list){
 		
 	
 }
-/*
+
 
 public function getFromURL($desurl){
 
@@ -224,7 +224,7 @@ public function getCategories(){
 	return $sql->select("select * from tb_categories c inner join tb_productscategories pc on pc.idcategory=c.idcategory where pc.idproduct= :idproduct  ",array(":idproduct"=>$this->getidproduct()));
 }
 
-
+/*
 public  static function getPage($page=1, $itemsToPage=10){
 
 			$sql= new Sql();

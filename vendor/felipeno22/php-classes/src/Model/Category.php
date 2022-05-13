@@ -166,7 +166,7 @@ public  function delete($idcategory){
 	}
 
 
-/*
+
 	public function getProductsPage($page=1, $itemsToPage=3){
 
 			$sql= new Sql();
@@ -209,7 +209,7 @@ public  function delete($idcategory){
 
 			
 
-			$result= $sql->select("select sql_calc_found_rows *  FROM db_ecommerce.tb_categories limit ".$start.",".$itemsToPage." ");
+			$result= $sql->select("select sql_calc_found_rows *  FROM tb_categories limit ".$start.",".$itemsToPage." ");
 		
 			$result2= $sql->select("select found_rows() as nrtotal");
 
@@ -233,7 +233,7 @@ public  function delete($idcategory){
 
 			
 
-			$result= $sql->select("select sql_calc_found_rows *  FROM db_ecommerce.tb_categories 
+			$result= $sql->select("select sql_calc_found_rows *  FROM tb_categories 
 					 where descategory like :search  order by idcategory limit ".$start.",".$itemsToPage." ", ["search"=> "%".$search."%"] );
 		
 			$result2= $sql->select("select found_rows() as nrtotal");
@@ -250,7 +250,6 @@ public  function delete($idcategory){
 
 	}
 	
-*/
 
 
 }

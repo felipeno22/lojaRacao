@@ -59,8 +59,8 @@
             </div>
 			
 			<div class="form-group">
-              <label for="weight">Peso</label>
-              <input type="text" class="form-control" id="weight" name="weight" placeholder="0.00">
+              <label for="vlweight">Peso</label>
+              <input type="text" class="form-control" id="vlweight" name="vlweight" placeholder="0.00">
             </div>
 			
 			<div class="form-group">

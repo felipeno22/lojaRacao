@@ -9,6 +9,9 @@ use \felipeno22\Mailer;
 class User extends Model {
 
 	const SESSION = "User";
+	const SESSION_ERROR_USER = "UserError";
+	const ERROR_REGISTER = "UserErrorRegister";
+	const SUCCESS = "UserSucesss";
 	
 	//CHAVE´PARA CRIPTOGRAFAR E DESCRIPTOGRAFAR obs: deve ter no minimo 16 caracteres é uma regra
 	//NUNCA SUBA ESSA CHAVE NO GITHUB NO REPOSITORIO PUBLICO SE NAO PODEM USAR ELA PARA DESCRIPTOGRAFAR
@@ -19,6 +22,64 @@ class User extends Model {
 	protected $fields = [
 		"iduser", "idperson","desperson","desemail","nrphone" ,"deslogin", "despassword", "inadmin", "dtergister"
 	];
+
+
+	public static function getFromSession()
+	{
+
+		$usuario = new User();
+
+		if (isset($_SESSION[User::SESSION]) && (int)$_SESSION[User::SESSION]['iduser'] > 0) {
+
+			
+			//se tiver idcusuario passa ele para bscar no banco pelo metodo get()
+			$usuario->get((int)$_SESSION[User::SESSION]['iduser']);
+
+		}
+
+		return $usuario;
+
+	}
+	
+	
+	public static function checkLogin($inadmin = true)
+	{		
+
+		if (
+			!isset($_SESSION[User::SESSION])
+			||
+			!$_SESSION[User::SESSION]
+			||
+			!(int)$_SESSION[User::SESSION]["iduser"] > 0
+		) {
+			
+			//Não está logado
+			return false;
+
+		} else {
+		
+			//se estiver logado e a rota for da adminitração
+			if ($inadmin === true && (bool)$_SESSION[User::SESSION]['inadmin'] === true) {
+
+				return true;
+
+				//se estiver  logado e a rota nao  for da adminitração
+			} else if ($inadmin === false) {
+
+				return true;
+
+				//se estiver  deslogado e  rota for da administração
+			} else {
+
+				return false;
+
+			}
+
+		}
+
+	}
+
+
 
 	public static function login($login, $password):User
 	{
@@ -38,6 +99,7 @@ class User extends Model {
 		if (password_verify($password, $data["despassword"])) {
 
 			$user = new User();
+			//$data['desperson'] = utf8_encode($data['desperson']);
 			$user->setData($data);
 
 			
@@ -63,18 +125,31 @@ class User extends Model {
 
 	}
 
+
+public static function verifyLogin($inadmin = true)
+	{
+		
+
+		if (!User::checkLogin($inadmin)) {
+
+			if ($inadmin) {
+				header("Location: /admin/login");
+			} else {
+				header("Location: /login");
+			}
+			exit;
+
+		}
+
+
+	}
+	
+	
+	/*
 public static function verifyLogin($inadmin = true)
 	{
 
-		if (
-			!isset($_SESSION[User::SESSION])
-			|| 
-			!$_SESSION[User::SESSION]
-			||
-			!(int)$_SESSION[User::SESSION]["iduser"] > 0
-			||
-			(bool)$_SESSION[User::SESSION]["inadmin"] !== $inadmin
-		) {
+		if (!User::checkLogin($inadmin)) {
 			
 			header("Location: /admin/login");
 			exit;
@@ -82,7 +157,7 @@ public static function verifyLogin($inadmin = true)
 		}
 
 	}
-	
+	*/
 	
 	
 public static function listAll(){
@@ -116,9 +191,9 @@ public  function save(){
 		:despassword, 
 		:desemail, 
 		:nrphone, 
-		:inadmin)",array(":desperson"=>utf8_decode($this->getdesperson()),
+		:inadmin)",array(":desperson"=>$this->getdesperson(),
 			":deslogin"=>$this->getdeslogin(),
-			":despassword"=>password_hash($this->getdespassword(), PASSWORD_DEFAULT,['cost'=>12]),//md5($this->getdespassword()),
+			":despassword"=>User::getPasswordHash($this->getdespassword()),//password_hash($this->getdespassword(), PASSWORD_DEFAULT,['cost'=>12]),//md5($this->getdespassword()),
 			":desemail"=>$this->getdesemail(),
 			":nrphone"=>$this->getnrphone(),
 			":inadmin"=>$this->getinadmin()));
@@ -138,7 +213,8 @@ $result=$sql->select('SELECT * FROM tb_users u
 inner join tb_persons p 
 on p.idperson=u.idperson  where u.iduser= :iduser',array("iduser"=>$iduser));
 
-		
+	//$data['desperson'] = utf8_encode($data['desperson']);
+	
 	$this->setData($result[0]);
 
 	
@@ -160,9 +236,9 @@ public  function update(){
 		:pdesemail, 
 		:pnrphone, 
 		:pinadmin)",array(":piduser"=>$this->getiduser(),
-			":pdesperson"=>utf8_decode($this->getdesperson()),
+			":pdesperson"=>$this->getdesperson(),
 			":pdeslogin"=>$this->getdeslogin(),
-			":pdespassword"=>$this->getdespassword(),
+			":pdespassword"=>User::getPasswordHash($this->getdespassword()),
 			":pdesemail"=>$this->getdesemail(),
 			":pnrphone"=>$this->getnrphone(),
 			":pinadmin"=>$this->getinadmin()));
@@ -355,6 +431,113 @@ public  function setPassword($password)
 
 	}
 
+
+
+public static function setMsgError($msg)
+	{
+
+		$_SESSION[User::SESSION_ERROR_USER] = $msg;
+
+	}
+
+	public static function getMsgError()
+	{
+
+		$msg = (isset($_SESSION[User::SESSION_ERROR_USER])) ? $_SESSION[User::SESSION_ERROR_USER] : "";
+
+		User::clearMsgError();
+
+		return $msg;
+
+	}
+
+	public static function clearMsgError()
+	{
+
+		$_SESSION[User::SESSION_ERROR_USER] = NULL;
+
+	}
+
+
+	public static function setErrorRegister($msg)
+	{
+
+		$_SESSION[User::ERROR_REGISTER] = $msg;
+
+	}
+
+	public static function getErrorRegister()
+	{
+
+		$msg = (isset($_SESSION[User::ERROR_REGISTER]) && $_SESSION[User::ERROR_REGISTER]) ? $_SESSION[User::ERROR_REGISTER] : '';
+
+		User::clearErrorRegister();
+
+		return $msg;
+
+	}
+
+	public static function clearErrorRegister()
+	{
+
+		$_SESSION[User::ERROR_REGISTER] = NULL;
+
+	}
+
+
+
+	public static function setSuccess($msg)
+	{
+
+		$_SESSION[User::SUCCESS] = $msg;
+
+	}
+
+	public static function getSuccess()
+	{
+
+		$msg = (isset($_SESSION[User::SUCCESS]) && $_SESSION[User::SUCCESS]) ? $_SESSION[User::SUCCESS] : '';
+
+		User::clearSuccess();
+
+		return $msg;
+
+	}
+
+	public static function clearSuccess()
+	{
+
+		$_SESSION[User::SUCCESS] = NULL;
+
+	}
+	
+	
+	public static function getPasswordHash($password)
+	{
+
+		return password_hash($password, PASSWORD_DEFAULT, [
+			'cost'=>12
+		]);
+
+
+}
+
+
+
+
+
+	public static function checkLoginExist($login)
+	{
+
+		$sql = new Sql();
+
+		$results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :deslogin", [
+			':deslogin'=>$login
+		]);
+
+		return (count($results) > 0);
+
+	}
 }
 
  ?>
